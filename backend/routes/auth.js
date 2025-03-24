@@ -30,10 +30,10 @@ const {VALIDATE,VALIDATION_RULES}= require("../utils/validationRules");
  *             properties:
  *               username:
  *                 type: string
- *                 example: johndoe
+ *                 example: ilyas
  *               email:
  *                 type: string
- *                 example: johndoe@example.com
+ *                 example: ilyas@example.com
  *               password:
  *                 type: string
  *                 format: password
@@ -73,7 +73,7 @@ const {VALIDATE,VALIDATION_RULES}= require("../utils/validationRules");
  *             properties:
  *               email:
  *                 type: string
- *                 example: johndoe@example.com
+ *                 example: ilyas@example.com
  *               password:
  *                 type: string
  *                 format: password
