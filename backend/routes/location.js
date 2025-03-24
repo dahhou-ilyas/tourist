@@ -80,4 +80,36 @@ router.post("/locations", verifyToken
     , locationService.addLocation
 )
 
+
+
+/**
+ * @swagger
+ * /locations/nearby:
+ *   get:
+ *     summary: Get locations near a given point
+ *     tags: [Locations]
+ *     parameters:
+ *       - in: query
+ *         name: lat
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Latitude of the user
+ *       - in: query
+ *         name: lng
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Longitude of the user
+ *     responses:
+ *       200:
+ *         description: List of nearby locations
+ *       400:
+ *         description: Missing or invalid query parameters
+ *       500:
+ *         description: Internal server error
+ */
+
+router.get("/locations/nearby", verifyToken, locationService.getNearbyLocations);
+
 module.exports = router
