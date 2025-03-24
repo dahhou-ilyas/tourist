@@ -10,8 +10,10 @@ const User = require("../model/User");
 const {VALIDATE,VALIDATION_RULES}= require("../utils/validationRules")
 
 
-router.post('/register',VALIDATION_RULES.register, VALIDATE,
-  async (req,res)=>{
+router.post('/register'
+  , VALIDATION_RULES.register
+  , VALIDATE
+  , async (req,res)=>{
 
     const { username, email, password } = req.body;
 
@@ -50,8 +52,10 @@ router.post('/register',VALIDATION_RULES.register, VALIDATE,
   }
 )
 
-router.post('/login',VALIDATION_RULES.login, VALIDATE,
-  async (req, res)=>{
+router.post('/login'
+  , VALIDATION_RULES.login
+  , VALIDATE
+  , async (req, res)=>{
     
     const { email, password } = req.body;
 

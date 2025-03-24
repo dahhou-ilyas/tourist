@@ -9,7 +9,10 @@ const verifyToken = require("../middleware/verifyToken")
 const {VALIDATE,VALIDATION_RULES}= require("../utils/validationRules")
 
 
-router.post("/locations",verifyToken,VALIDATION_RULES.addLocation,VALIDATE,async(req,res)=>{
+router.post("/locations", verifyToken
+    , VALIDATION_RULES.addLocation
+    , VALIDATE
+    , async(req,res)=>{
     try {
         const locationData = req.body;
 
