@@ -24,11 +24,7 @@ module.exports = {
     getNearbyLocations: async (req,res)=>{
         try {
             const { lat, lng } = req.query;
-            
-            if (!lat || !lng) {
-                return res.status(400).json({ message: 'Latitude and longitude are required' });
-            }
-            
+              
             const point = {
                 type: 'Point',
                 coordinates: [parseFloat(lng), parseFloat(lat)]

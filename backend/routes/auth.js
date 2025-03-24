@@ -55,6 +55,13 @@ const {VALIDATE,VALIDATION_RULES}= require("../utils/validationRules");
  *         description: Internal server error
  */
 
+
+router.post('/register'
+  , VALIDATION_RULES.register
+  , VALIDATE
+  , authService.register
+)
+
 /**
  * @swagger
  * /auth/login:
@@ -95,12 +102,6 @@ const {VALIDATE,VALIDATION_RULES}= require("../utils/validationRules");
  *         description: Internal server error
  */
 
-
-router.post('/register'
-  , VALIDATION_RULES.register
-  , VALIDATE
-  , authService.register
-)
 
 router.post('/login'
   , VALIDATION_RULES.login

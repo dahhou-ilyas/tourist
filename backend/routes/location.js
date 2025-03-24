@@ -74,7 +74,8 @@ const locationService = require("../service/location")
  *         description: Internal server error
  */
 
-router.post("/locations", verifyToken
+router.post("/locations"
+    , verifyToken
     , VALIDATION_RULES.addLocation
     , VALIDATE
     , locationService.addLocation
@@ -110,6 +111,10 @@ router.post("/locations", verifyToken
  *         description: Internal server error
  */
 
-router.get("/locations/nearby", verifyToken, locationService.getNearbyLocations);
+router.get("/locations/nearby"
+    , verifyToken
+    , VALIDATION_RULES.getNearbyLocations
+    , VALIDATE
+    , locationService.getNearbyLocations);
 
 module.exports = router

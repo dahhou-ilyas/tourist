@@ -35,6 +35,14 @@ const VALIDATION_RULES = {
           .withMessage('Invalid risk level'),
         body('description').optional().isString()
     ],
+    getNearbyLocations: [
+      query('lat')
+        .notEmpty().withMessage('Latitude is required')
+        .isFloat({ min: -90, max: 90 }).withMessage('Latitude must be a valid number between -90 and 90'),
+      query('lng')
+        .notEmpty().withMessage('Longitude is required')
+        .isFloat({ min: -180, max: 180 }).withMessage('Longitude must be a valid number between -180 and 180'),
+    ],
 };
 
 const VALIDATE = (req, res, next) => {
