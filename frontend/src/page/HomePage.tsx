@@ -13,13 +13,13 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-12">
       <div className="container mx-auto max-w-4xl">
         <div className="bg-white shadow-2xl rounded-2xl overflow-hidden">
-          <div className="grid md:grid-cols-2 items-center">
+          <div className="grid md:flex md:flex-col md:py-12 items-center">
             
             {/* Content Section */}
             <div className="p-8 space-y-6 text-center md:text-left">
               <div className="flex justify-center md:justify-start mb-4">
                 <Lock 
-                  className="text-blue-500 mr-3" 
+                  className="text-blue-500 mr-3"
                   size={36} 
                 />
                 <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
