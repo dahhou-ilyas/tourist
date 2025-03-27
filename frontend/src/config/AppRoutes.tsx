@@ -4,9 +4,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Nav from '../component/Nav';
 import HomePage from '../page/HomePage';
 import LoginPage from '../page/LoginPage';
+import NotFoundPage from '../page/NotFoundPage';
+import AdminDashboard from '../page/AdminDashboard';
 
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import NotFoundPage from '../page/NotFoundPage';
+
 
 
 
@@ -37,7 +39,7 @@ const AppRoutes: React.FC = () => {
                 path="/dashboard" 
                 element={
                   <ProtectedRoute>
-                    <p>Hello</p>
+                    <AdminDashboard/>
                   </ProtectedRoute>
                 } 
               />
