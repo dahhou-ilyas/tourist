@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { MapPin, Info, AlertTriangle } from 'lucide-react';
-
+import { MapPin, AlertTriangle } from 'lucide-react';
+//au lieu de cette form je doit ajouté les donné a travers un map le admine entrer dans le map et cadrer un surface ou choisire un point et automatiquement les donné sont ajouté
+//j'ai travailé sur cette fonctionnalité
 interface LocationFormData {
     city: string;
     neighborhood: string;
