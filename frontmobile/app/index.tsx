@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator, Text } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 export default function Index() {
@@ -11,18 +11,16 @@ export default function Index() {
   useEffect(() => {
     let positionSubscription;
     (async () => {
-      // Demande de permission d'accès à la localisation
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission d’accès à la localisation refusée');
         return;
       }
-      // Récupère la position initiale
+
       let location = await Location.getCurrentPositionAsync({});
       setLocationData(location);
       setHeading(location.coords.heading);
 
-      // Abonnement au suivi continu de la position (et du cap)
       positionSubscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
@@ -52,12 +50,22 @@ export default function Index() {
     );
   }
 
+  const { latitude, longitude } = locationData.coords;
+
   const region = {
-    latitude: locationData.coords.latitude,
-    longitude: locationData.coords.longitude,
+    latitude,
+    longitude,
     latitudeDelta: 0.005,
     longitudeDelta: 0.005,
   };
+
+  // Une zone polygonale autour de la position (un carré simple ici)
+  const polygonCoordinates = [
+    { latitude: latitude + 0.001, longitude: longitude - 0.001 },
+    { latitude: latitude + 0.001, longitude: longitude + 0.001 },
+    { latitude: latitude - 0.001, longitude: longitude + 0.001 },
+    { latitude: latitude - 0.001, longitude: longitude - 0.001 },
+  ];
 
   return (
     <View style={styles.container}>
@@ -67,20 +75,24 @@ export default function Index() {
         showsUserLocation={true}
       >
         <Marker 
-          coordinate={{
-            latitude: locationData.coords.latitude,
-            longitude: locationData.coords.longitude
-          }}
-          title="Vous êtes icixxx"
-          // La prop 'rotation' permet de faire pivoter le marqueur selon le cap
+          coordinate={{ latitude, longitude }}
+          title="Vous êtes ici"
           rotation={heading || 0}
         />
+        <Polygon
+          coordinates={polygonCoordinates}
+          strokeColor="#000"
+          fillColor="rgba(0, 200, 0, 0.3)"
+          strokeWidth={2}
+        />
       </MapView>
+
       {heading !== null && (
         <View style={styles.headingContainer}>
           <Text>Direction : {Math.round(heading)}°</Text>
         </View>
       )}
+
       {errorMsg && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{errorMsg}</Text>
