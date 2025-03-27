@@ -23,6 +23,7 @@ const LoginPage: React.FC = () => {
         setError('Identifiants incorrects');
       }
     } catch (err) {
+      console.log(err);
       setError('Une erreur est survenue');
     }
   };

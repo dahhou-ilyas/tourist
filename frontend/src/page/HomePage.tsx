@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Shield } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
