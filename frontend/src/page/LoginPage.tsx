@@ -57,12 +57,7 @@ const LoginPage: React.FC = () => {
             >
               {/* Username Input */}
               <div>
-                <label 
-                  htmlFor="username" 
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Nom d'utilisateur
-                </label>
+                
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User className="text-gray-400" size={20} />
@@ -85,12 +80,7 @@ const LoginPage: React.FC = () => {
 
               {/* Password Input */}
               <div>
-                <label 
-                  htmlFor="password" 
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Mot de passe
-                </label>
+                
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="text-gray-400" size={20} />

@@ -6,13 +6,14 @@ const Nav: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
+    
     setIsMenuOpen(!isMenuOpen);
   };
 
   const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/about', label: 'About' },
-    { to: '/contact', label: 'Contact' },
+    { to: '/', label: 'Home' , active : true},
+    { to: '/about', label: 'About', active : false },
+    { to: '/contact', label: 'Contact', active : false },
   ];
 
   return (
