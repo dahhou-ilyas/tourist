@@ -8,6 +8,8 @@ import NotFoundPage from '../page/NotFoundPage';
 import AdminDashboard from '../page/AdminDashboard';
 
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import LocationGeoForm from '../page/LocationGeoForm';
+import LocationGeoFormFromMap from '../page/LocationGeoFormFromMap';
 
 
 
@@ -34,12 +36,22 @@ const AppRoutes: React.FC = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
 
+              <Route path="/geo" element={<LocationGeoFormFromMap />} />
+
               {/* Protected Admin Routes */}
               <Route 
                 path="/dashboard" 
                 element={
                   <ProtectedRoute>
                     <AdminDashboard/>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/location" 
+                element={
+                  <ProtectedRoute>
+                    <LocationGeoForm/>
                   </ProtectedRoute>
                 } 
               />
