@@ -16,6 +16,7 @@ export interface LocationFormData {
 }
 
 const LocationGeoFormFromMap: React.FC = () => {
+  const [locationType,setLocationType]=useState(true);
   const [formData, setFormData] = useState<LocationFormData>({
     city: '',
     neighborhood: '',
@@ -29,7 +30,11 @@ const LocationGeoFormFromMap: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
+    if((name == "locationType") && (value == "LineString" || value == "Polygon")){
+      setLocationType(false);
+    }else if(name == "locationType" && value == "Point"){
+      setLocationType(true)
+    }
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -107,20 +112,7 @@ const LocationGeoFormFromMap: React.FC = () => {
                 error={errors.neighborhood}
               />
 
-              {/* Section Carte pour la sélection de coordonnées */}
-              <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-700 mb-2">
-                  Sélectionnez la localisation sur la carte
-                </h3>
-                <MapComponent onSelect={handleMapSelect} />
-                {errors.coordinates && (
-                  <div className="mt-2 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="mr-2" size={16} /> {errors.coordinates}
-                  </div>
-                )}
-              </div>
-
-              <FormSelect 
+            <FormSelect 
                 label="Type de Localisation"
                 id="locationType"
                 name="locationType"
@@ -132,6 +124,20 @@ const LocationGeoFormFromMap: React.FC = () => {
                   { value: 'Polygon', label: 'Polygone' }
                 ]}
               />
+
+              {/* Section Carte pour la sélection de coordonnées */}
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-700 mb-2">
+                  Sélectionnez la localisation sur la carte
+                </h3>
+                <MapComponent onSelect={handleMapSelect} locationType={locationType}/>
+                {errors.coordinates && (
+                  <div className="mt-2 text-sm text-red-600 flex items-center">
+                    <AlertTriangle className="mr-2" size={16} /> {errors.coordinates}
+                  </div>
+                )}
+              </div>
+
 
               <FormSelect 
                 label="Niveau de Risque"
