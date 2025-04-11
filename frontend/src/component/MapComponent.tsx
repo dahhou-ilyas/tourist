@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents,Polyline } from 'react-leaflet';
-import MapSearchComponent from './MapSearchCoponent';
+//import MapSearchComponent from './MapSearchCoponent';
 import L from 'leaflet';
 
-type MultiPolyline = [number, number][][];
 interface MapComponentProps {
     onSelect: (coordinates: number[]) => void;
     locationType : boolean
@@ -39,13 +38,14 @@ const MapSelector: React.FC<MapComponentProps> = ({ onSelect ,locationType}) => 
       },
     });
   
-    return position ? <Marker position={position} /> : null;
+    return (position && locationType) ? <Marker position={position} /> : null;
 };
 
 const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
   const isDragging = useRef(false);
-  const [initPoint,setInitPoint]=useState<MultiPolyline>([])
-  const [ligne , setLigne]= useState<Array<[number,number]>>([]);
+  const startPoint = useRef<[number, number] | null>(null);
+  const [currentLine, setCurrentLine] = useState<Line>([]);
+  const [allLines, setAllLines] = useState<MultiPolyline>([]);
 
   
   useMapEvents({
@@ -55,17 +55,17 @@ const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
       }
       isDragging.current = true;
       const { lat, lng } = e.latlng;
-      setInitPoint([lat,lng])
-      setLigne(prev=>[...prev,[lat,lng]])
+      startPoint.current = [lat, lng];
+      setCurrentLine([[lat, lng], [lat, lng]]);
       console.log('🟢 Drag start at:', e.latlng);
     },
     mousemove(e) {
-      if(isPoint){
+      if (isPoint || !isDragging.current || !startPoint.current) {
         return;
       }
       if (isDragging.current) {
         const { lat, lng } = e.latlng;
-        setLigne(prev=>[...prev,[lat,lng]])
+        setCurrentLine([startPoint.current, [lat, lng]]);
         console.log('🟡 Dragging at:', e.latlng);
         // 👉 Tu peux ici mettre à jour une position, dessiner, etc.
       }
@@ -74,22 +74,28 @@ const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
       if(isPoint){
         return;
       }
-      if (isDragging.current) {
+      if (isDragging.current && startPoint.current) {
         isDragging.current = false;
         const { lat, lng } = e.latlng;
-        setLigne(prev=>[...prev,[lat,lng]])
-        setLigne([])
+        const finalLine = [startPoint.current, [lat, lng]];
+        setAllLines(prev => [...prev, finalLine]);
+        setCurrentLine([]);
+        startPoint.current = null;
         console.log('🔴 Drag end at:', e.latlng);
         // 👉 Action finale après drag (ex: enregistrer la zone)
       }
     },
   });
 
-  if(ligne){
-    return <Polyline positions = {ligne}/>
-  }
+    return (
+      <>
+        {allLines.map((line, index) => (
+        <Polyline key={`line-${index}`} positions={line} />
+        ))}
+        {currentLine.length > 0 && <Polyline positions={currentLine} />}
+      </>
+    );
 
-  return null;
 };
 
 const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType }) => {

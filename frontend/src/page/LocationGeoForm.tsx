@@ -4,16 +4,6 @@ import { validateLocationForm } from '../utils/validationForm';
 import FormInput from '../component/FormInput';
 import FormSelect from '../component/FormSelect';
 
-// Define types in a separate interface file
-export interface LocationFormData {
-    city: string;
-    neighborhood: string;
-    locationType: 'Point' | 'LineString' | 'Polygon';
-    coordinates: number[];
-    riskLevel: 'low' | 'medium' | 'high';
-    description: string;
-}
-
 
 const LocationGeoForm: React.FC = () => {
     // Initial form state

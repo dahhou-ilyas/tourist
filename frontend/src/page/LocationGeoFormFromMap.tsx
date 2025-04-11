@@ -6,14 +6,6 @@ import FormInput from '../component/FormInput';
 import FormSelect from '../component/FormSelect';
 import MapComponent from '../component/MapComponent';
 
-export interface LocationFormData {
-  city: string;
-  neighborhood: string;
-  locationType: 'Point' | 'LineString' | 'Polygon';
-  coordinates: number[];
-  riskLevel: 'low' | 'medium' | 'high';
-  description: string;
-}
 
 const LocationGeoFormFromMap: React.FC = () => {
   const [locationType,setLocationType]=useState(true);
