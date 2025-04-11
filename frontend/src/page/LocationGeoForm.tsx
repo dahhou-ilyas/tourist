@@ -7,7 +7,7 @@ import FormSelect from '../component/FormSelect';
 
 const LocationGeoForm: React.FC = () => {
     // Initial form state
-    const [formData, setFormData] = useState<LocationFormData>({
+    const [formData, setFormData] = useState<LocationFormData >({
         city: '',
         neighborhood: '',
         locationType: 'Point',

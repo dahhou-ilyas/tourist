@@ -27,6 +27,7 @@ const LocationGeoFormFromMap: React.FC = () => {
     }else if(name == "locationType" && value == "Point"){
       setLocationType(true)
     }
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -57,7 +58,8 @@ const LocationGeoFormFromMap: React.FC = () => {
   };
 
   // Fonction pour récupérer les coordonnées depuis la carte
-  const handleMapSelect = (coords: number[]) => {
+  const handleMapSelect = (coords: Coordinates) => {
+    console.log(coords); // all type of coordinate
     setFormData(prev => ({ ...prev, coordinates: coords }));
   };
 

@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents,Polyline } from 'react-le
 import L from 'leaflet';
 
 interface MapComponentProps {
-    onSelect: (coordinates: number[]) => void;
+    onSelect: (coordinates: Coordinates) => void;
     locationType : boolean
 }
 type UpdateDraggingProps = {
@@ -40,17 +40,26 @@ const MapSelector: React.FC<MapComponentProps> = ({ onSelect ,locationType}) => 
   
     return (position && locationType) ? <Marker position={position} /> : null;
 };
-
-const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
+//locationType is un boolean qui permet de vérifier si il est un point ou  (ligne et polygon)
+const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => {
   const isDragging = useRef(false);
   const startPoint = useRef<[number, number] | null>(null);
   const [currentLine, setCurrentLine] = useState<Line>([]);
   const [allLines, setAllLines] = useState<MultiPolyline>([]);
 
+  useEffect(() => {
+    if(locationType) {
+      setAllLines([]);
+    }
+  }, [locationType]);
+
+  useEffect(()=>{
+    onSelect(allLines)
+  },[allLines])
   
   useMapEvents({
     mousedown(e) {
-      if(isPoint){
+      if(locationType){
         return;
       }
       isDragging.current = true;
@@ -60,29 +69,29 @@ const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
       console.log('🟢 Drag start at:', e.latlng);
     },
     mousemove(e) {
-      if (isPoint || !isDragging.current || !startPoint.current) {
+      if (locationType || !isDragging.current || !startPoint.current) {
         return;
       }
       if (isDragging.current) {
         const { lat, lng } = e.latlng;
         setCurrentLine([startPoint.current, [lat, lng]]);
         console.log('🟡 Dragging at:', e.latlng);
-        // 👉 Tu peux ici mettre à jour une position, dessiner, etc.
       }
     },
     mouseup(e) {
-      if(isPoint){
+      if(locationType){
         return;
       }
       if (isDragging.current && startPoint.current) {
         isDragging.current = false;
         const { lat, lng } = e.latlng;
-        const finalLine = [startPoint.current, [lat, lng]];
-        setAllLines(prev => [...prev, finalLine]);
+        const finalLine : Array<[number, number]> = [startPoint.current, [lat, lng]];
+        setAllLines(prev => {
+          return [...prev, finalLine]
+        });
         setCurrentLine([]);
         startPoint.current = null;
         console.log('🔴 Drag end at:', e.latlng);
-        // 👉 Action finale après drag (ex: enregistrer la zone)
       }
     },
   });
@@ -115,7 +124,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType }) =>
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <MapSelector onSelect={onSelect} locationType ={locationType} />
-        <MapSelectLign isPoint={locationType}/>
+        <MapSelectLign onSelect={onSelect} locationType={locationType}/>
         <UpdateDragging dragging={locationType} mapRef={mapRef} />
       </MapContainer>
     );
