@@ -41,7 +41,18 @@ const LocationGeoFormFromMap: React.FC = () => {
     const formErrors = validateLocationForm(formData);
     
     if (Object.keys(formErrors).length === 0) {
-      console.log('Formulaire valide:', formData);
+      fetch("http://localhost:3000/locations",{
+        method:"POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body:"data"
+      }).then(res=>res.json()).then(data=>{
+        console.log(data);
+      }).catch(err=>{
+        console.error(err)
+      })
       // Appel API ici
     } else {
       setErrors(formErrors);
