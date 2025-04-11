@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents,Polyline } from 'react-leaflet';
 import MapSearchComponent from './MapSearchCoponent';
 import L from 'leaflet';
 
-
+type MultiPolyline = [number, number][][];
 interface MapComponentProps {
     onSelect: (coordinates: number[]) => void;
     locationType : boolean
@@ -44,6 +44,8 @@ const MapSelector: React.FC<MapComponentProps> = ({ onSelect ,locationType}) => 
 
 const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
   const isDragging = useRef(false);
+  const [initPoint,setInitPoint]=useState<MultiPolyline>([])
+  const [ligne , setLigne]= useState<Array<[number,number]>>([]);
 
   
   useMapEvents({
@@ -52,6 +54,9 @@ const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
         return;
       }
       isDragging.current = true;
+      const { lat, lng } = e.latlng;
+      setInitPoint([lat,lng])
+      setLigne(prev=>[...prev,[lat,lng]])
       console.log('🟢 Drag start at:', e.latlng);
     },
     mousemove(e) {
@@ -59,6 +64,8 @@ const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
         return;
       }
       if (isDragging.current) {
+        const { lat, lng } = e.latlng;
+        setLigne(prev=>[...prev,[lat,lng]])
         console.log('🟡 Dragging at:', e.latlng);
         // 👉 Tu peux ici mettre à jour une position, dessiner, etc.
       }
@@ -69,11 +76,18 @@ const MapSelectLign: React.FC<boolean> = ({isPoint}) => {
       }
       if (isDragging.current) {
         isDragging.current = false;
+        const { lat, lng } = e.latlng;
+        setLigne(prev=>[...prev,[lat,lng]])
+        setLigne([])
         console.log('🔴 Drag end at:', e.latlng);
         // 👉 Action finale après drag (ex: enregistrer la zone)
       }
     },
   });
+
+  if(ligne){
+    return <Polyline positions = {ligne}/>
+  }
 
   return null;
 };
