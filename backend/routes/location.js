@@ -75,7 +75,6 @@ const locationService = require("../service/location")
  */
 
 router.post("/locations"
-    , verifyToken
     , VALIDATION_RULES.addLocation
     , VALIDATE
     , locationService.addLocation

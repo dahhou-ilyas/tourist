@@ -5,6 +5,7 @@ import { validateLocationForm } from '../utils/validationForm';
 import FormInput from '../component/FormInput';
 import FormSelect from '../component/FormSelect';
 import MapComponent from '../component/MapComponent';
+import { SERVER_URL } from '../config/serverURLConfig';
 
 
 const LocationGeoFormFromMap: React.FC = () => {
@@ -37,15 +38,27 @@ const LocationGeoFormFromMap: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formErrors = validateLocationForm(formData);
-    
+    console.log(formData);
+    const request = {
+      city:formData.city,
+      neighborhood:formData.neighborhood,
+      location:{
+        type:formData.locationType,
+        coordinates:formData.coordinates
+      },
+      riskLevel:formData.riskLevel,
+      description:formData.description
+
+    }
+
     if (Object.keys(formErrors).length === 0) {
-      fetch("http://localhost:3000/locations",{
+      fetch(SERVER_URL+"/maps/locations",{
         method:"POST",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body:"data"
+        body:JSON.stringify(request)
       }).then(res=>res.json()).then(data=>{
         console.log(data);
       }).catch(err=>{

@@ -8,7 +8,6 @@ import NotFoundPage from '../page/NotFoundPage';
 import AdminDashboard from '../page/AdminDashboard';
 
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import LocationGeoForm from '../page/LocationGeoForm';
 import LocationGeoFormFromMap from '../page/LocationGeoFormFromMap';
 
 
@@ -47,14 +46,7 @@ const AppRoutes: React.FC = () => {
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/location" 
-                element={
-                  <ProtectedRoute>
-                    <LocationGeoForm/>
-                  </ProtectedRoute>
-                } 
-              />
+             
 
               {/* 404 Not Found Route */}
               <Route path="*" element={<NotFoundPage/>} />

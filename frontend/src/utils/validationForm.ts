@@ -1,4 +1,3 @@
-import { LocationFormData } from "../page/LocationGeoForm";
 
 // Separate validation logic into its own function
 export const validateLocationForm = (formData: LocationFormData): Partial<LocationFormData> => {

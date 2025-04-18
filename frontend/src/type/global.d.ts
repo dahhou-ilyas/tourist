@@ -1,4 +1,4 @@
-type Coordinates = number[] | [number, number][][];
+type Coordinates = number[] | [number, number][][] | number[][];
 type MultiPolyline = Array<Array<[number, number]>>
 type Line = Array<[number,number]>
 

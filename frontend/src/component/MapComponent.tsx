@@ -27,18 +27,29 @@ const UpdateDragging: React.FC<UpdateDraggingProps> = ({ dragging, mapRef }) => 
 };
 
 const MapSelector: React.FC<MapComponentProps> = ({ onSelect ,locationType}) => {
+
     const [position, setPosition] = useState<[number, number] | null>(null);
   
-    
+    const [points , setPoints] = useState<[number, number][]>([]);
+
+    useEffect(()=>{
+      onSelect(points);
+    },[points])
+
     useMapEvents({
       click(e) {
         const { lat, lng } = e.latlng;
+        setPoints(prev=>[...prev,[lat, lng]])
         setPosition([lat, lng]);
-        onSelect([lng, lat]);
+        
       },
     });
+
+    const handleMarkerClick = (indexToRemove: number) => {
+      setPoints((prevPoints) => prevPoints.filter((_, i) => i !== indexToRemove));
+    };
   
-    return (position && locationType) ? <Marker position={position} /> : null;
+    return (position && points && locationType) ? points.map((p, index) => <Marker key={index} position={p} eventHandlers={{click: () => handleMarkerClick(index)}}/>) : null;
 };
 //locationType is un boolean qui permet de vérifier si il est un point ou  (ligne et polygon)
 const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => {
