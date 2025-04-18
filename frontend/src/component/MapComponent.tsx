@@ -118,6 +118,10 @@ const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => 
 
 };
 
+const MapSelectPolygone : React.FC<MapComponentProps> = ({ onSelect,locationType }) =>{
+  return null;
+}
+
 const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType }) => {
   const mapRef = useRef<L.Map | null>(null);
 
