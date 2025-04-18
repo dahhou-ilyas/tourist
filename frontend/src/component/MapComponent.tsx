@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents,Polyline } from 'react-leaflet';
-//import MapSearchComponent from './MapSearchCoponent';
 import L from 'leaflet';
 
 interface MapComponentProps {
@@ -51,6 +50,8 @@ const MapSelector: React.FC<MapComponentProps> = ({ onSelect ,locationType}) => 
   
     return (position && points && locationType) ? points.map((p, index) => <Marker key={index} position={p} eventHandlers={{click: () => handleMarkerClick(index)}}/>) : null;
 };
+
+
 //locationType is un boolean qui permet de vérifier si il est un point ou  (ligne et polygon)
 const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => {
   const isDragging = useRef(false);
@@ -146,3 +147,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType }) =>
   };
   
   export default MapComponent;
+
+
+//locationType is un boolean qui permet de vérifier si il est un point ou  (ligne et polygon)
