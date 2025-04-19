@@ -1,203 +1,172 @@
-import React, { useEffect, useState } from 'react';
-import { useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet-draw';
-import 'leaflet-draw/dist/leaflet.draw.css';
+import { useEffect, useState } from "react";
+import { Marker, Polygon, Polyline, useMapEvents } from "react-leaflet";
 
-interface MapComponentProps {
-  onSelect: (coordinates: any) => void;
-  locationType: boolean;
-  locationNameType:string
-}
-
-const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationType,locationNameType }) => {
-  const map = useMap();
-  const [polygon, setPolygon] = useState<L.Polygon | null>(null);
-  const [editLayer, setEditLayer] = useState<L.EditToolbar.Edit | null>(null);
-  const [drawControl, setDrawControl] = useState<L.Control.Draw | null>(null);
-  const [markers, setMarkers] = useState<L.Marker[]>([]);
+const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationNameType }) => {
+    const [isCreating, setIsCreating] = useState(false);
+    const [currentPolygon, setCurrentPolygon] = useState<Polygon>([]);
+    const [editablePolygon, setEditablePolygon] = useState<Polygon | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [activeVertexIndex, setActiveVertexIndex] = useState<number | null>(null);
+    const [draggingVertex, setDraggingVertex] = useState(false);
   
-  // Fonction pour mettre à jour les coordonnées du polygone
-  const updateCoordinates = (layer: L.Polygon) => {
-    const latLngs = layer.getLatLngs()[0] as L.LatLng[];
-    const coordinates = latLngs.map(latLng => [latLng.lat, latLng.lng]);
-    onSelect(coordinates);
-  };
-
-  // Fonction pour ajouter des marqueurs aux milieux des segments
-  const addMidPointMarkers = (layer: L.Polygon) => {
-    // Supprimer les marqueurs existants
-    markers.forEach(marker => marker.remove());
-    
-    const latLngs = layer.getLatLngs()[0] as L.LatLng[];
-    const newMarkers: L.Marker[] = [];
-    
-    // Pour chaque segment, ajouter un marqueur au milieu
-    for (let i = 0; i < latLngs.length; i++) {
-      const p1 = latLngs[i];
-      const p2 = latLngs[(i + 1) % latLngs.length];
-      
-      // Calculer le point médian
-      const midLat = (p1.lat + p2.lat) / 2;
-      const midLng = (p1.lng + p2.lng) / 2;
-      
-      // Créer une icône personnalisée pour le marqueur de contrôle
-      const controlIcon = L.divIcon({
-        className: 'control-marker',
-        html: '<div style="background-color: white; border: 2px solid blue; border-radius: 50%; width: 12px; height: 12px;"></div>',
-        iconSize: [12, 12],
-        iconAnchor: [6, 6]
-      });
-      
-      // Créer le marqueur et l'ajouter à la carte
-      const marker = L.marker([midLat, midLng], {
-        icon: controlIcon,
-        draggable: true
-      }).addTo(map);
-      
-      // Manipuler le glisser-déposer pour modifier le polygone
-      marker.on('drag', (e) => {
-        const markerIndex = i;
-        const poly = polygon as L.Polygon;
-        const currentLatLngs = poly.getLatLngs()[0] as L.LatLng[];
+    useEffect(() => {
+      if (locationNameType !== "Polygon") {
+        setCurrentPolygon([]);
+        setEditablePolygon(null);
+      }
+    }, [locationNameType]);
+  
+    useEffect(() => {
+      if (editablePolygon && editablePolygon.length >= 3) {
+        onSelect([editablePolygon]);
+      }
+    }, [editablePolygon]);
+  
+    const handleMarkerDrag = (index: number, position: Point) => {
+      if (editablePolygon) {
+        const updatedPolygon = [...editablePolygon];
+        updatedPolygon[index] = position;
+        setEditablePolygon(updatedPolygon);
+      }
+    };
+  
+    const map = useMapEvents({
+      mousedown(e) {
+        if (locationNameType !== "Polygon") return;
         
-        // Calculer la nouvelle position
-        const newPoint = L.latLng((currentLatLngs[i].lat + currentLatLngs[(i + 1) % currentLatLngs.length].lat) / 2, 
-                                  (currentLatLngs[i].lng + currentLatLngs[(i + 1) % currentLatLngs.length].lng) / 2);
+        const { lat, lng } = e.latlng;
         
-        // Calculer le vecteur de déplacement
-        const dx = (e.target.getLatLng().lat - newPoint.lat);
-        const dy = (e.target.getLatLng().lng - newPoint.lng);
-        
-        // Déplacer les deux points adjacents
-        const p1 = currentLatLngs[i];
-        const p2 = currentLatLngs[(i + 1) % currentLatLngs.length];
-        
-        p1.lat += dx;
-        p1.lng += dy;
-        p2.lat += dx;
-        p2.lng += dy;
-        
-        // Mettre à jour le polygone
-        poly.setLatLngs(currentLatLngs);
-        updateCoordinates(poly);
-      });
-      
-      marker.on('dragend', () => {
-        // Mettre à jour les marqueurs après le déplacement
-        if (polygon) {
-          addMidPointMarkers(polygon);
+        // Si on est en mode édition et qu'on clique sur un vertex
+        if (isEditing && activeVertexIndex !== null) {
+          setDraggingVertex(true);
+          return;
         }
-      });
-      
-      newMarkers.push(marker);
-    }
-    
-    setMarkers(newMarkers);
-  };
-
-  useEffect(() => {
-    if (locationNameType !== 'polygon') {
-      // Si le type de localisation n'est pas polygon, on nettoie tout
-      if (polygon) {
-        polygon.remove();
-        setPolygon(null);
-      }
-      
-      markers.forEach(marker => marker.remove());
-      setMarkers([]);
-      
-      if (drawControl) {
-        map.removeControl(drawControl);
-        setDrawControl(null);
-      }
-      
-      return;
-    }
-
-    // Configuration des outils de dessin
-    const drawOptions = {
-      polygon: {
-        allowIntersection: false,
-        drawError: {
-          color: '#e1e100',
-          message: '<strong>Le polygone ne peut pas s\'intersecter!</strong>'
-        },
-        shapeOptions: {
-          color: '#3388ff',
-          weight: 3
+        
+        // Si on commence à créer un nouveau polygone
+        if (!isCreating && !editablePolygon) {
+          setIsCreating(true);
+          setCurrentPolygon([[lat, lng]]);
+          return;
+        }
+        
+        // Si on ajoute un point au polygone en cours de création
+        if (isCreating && !editablePolygon) {
+          setCurrentPolygon(prev => [...prev, [lat, lng]]);
+          
+          // Si on a au moins 4 points, vérifier si on ferme le polygone
+          if (currentPolygon.length >= 3) {
+            const firstPoint = currentPolygon[0];
+            const distance = Math.sqrt(
+              Math.pow(lat - firstPoint[0], 2) + Math.pow(lng - firstPoint[1], 2)
+            );
+            
+            // Si on est proche du premier point, fermer le polygone
+            if (distance < 0.001) { // Ajustez cette valeur selon la précision souhaitée
+              setEditablePolygon([...currentPolygon]);
+              setIsCreating(false);
+              setCurrentPolygon([]);
+              setIsEditing(true);
+            }
+          }
         }
       },
-      polyline: false,
-      circle: false,
-      rectangle: false,
-      marker: false,
-      circlemarker: false
-    };
-
-    console.log(drawOptions);
-    // Créer le contrôle de dessin
-    const control = new L.Control.Draw({
-      draw: drawOptions,
-      edit: {
-        featureGroup: new L.FeatureGroup(),
-        poly: {
-          allowIntersection: false
-        }
-      }
-    });
-    
-    map.addControl(control);
-    setDrawControl(control);
-
-    // Gérer l'événement de création d'un polygone
-    map.on(L.Draw.Event.CREATED, (e: any) => {
-      if (e.layerType === 'polygon') {
-        // Supprimer le polygone existant s'il y en a un
-        if (polygon) {
-          polygon.remove();
+      mousemove(e) {
+        if (locationNameType !== "Polygon") return;
+        
+        const { lat, lng } = e.latlng;
+        
+        // Si on est en train de déplacer un vertex
+        if (isEditing && draggingVertex && activeVertexIndex !== null && editablePolygon) {
+          const updatedPolygon = [...editablePolygon];
+          updatedPolygon[activeVertexIndex] = [lat, lng];
+          setEditablePolygon(updatedPolygon);
+          return;
         }
         
-        // Ajouter le nouveau polygone à la carte
-        const newPolygon = e.layer as L.Polygon;
-        newPolygon.addTo(map);
-        setPolygon(newPolygon);
+        // Mettre à jour le point courant lors de la création
+        if (isCreating && currentPolygon.length > 0) {
+          const updatedPolygon = [...currentPolygon];
+          if (updatedPolygon.length > 1) {
+            // Mettre à jour le dernier point pour suivre la souris
+            updatedPolygon[updatedPolygon.length - 1] = [lat, lng];
+            setCurrentPolygon(updatedPolygon);
+          }
+        }
+      },
+      mouseup() {
+        if (locationNameType !== "Polygon") return;
         
-        // Mettre à jour les coordonnées
-        updateCoordinates(newPolygon);
+        // Arrêter le déplacement d'un vertex
+        if (draggingVertex) {
+          setDraggingVertex(false);
+        }
+      },
+      dblclick() {
+        if (locationNameType !== "Polygon" || !isCreating) return;
         
-        // Ajouter les marqueurs de contrôle
-        addMidPointMarkers(newPolygon);
-      }
+        // Terminer la création du polygone avec un double-clic
+        if (currentPolygon.length >= 3) {
+          setEditablePolygon([...currentPolygon]);
+          setIsCreating(false);
+          setCurrentPolygon([]);
+          setIsEditing(true);
+        }
+      },
     });
-
-    // Gérer l'événement d'édition d'un polygone
-    map.on(L.Draw.Event.EDITED, (e: any) => {
-      const layers = e.layers;
-      layers.eachLayer((layer: L.Polygon) => {
-        updateCoordinates(layer);
-        addMidPointMarkers(layer);
-      });
-    });
-
-    // Nettoyage lors du démontage du composant
-    return () => {
-      if (drawControl) {
-        map.removeControl(drawControl);
-      }
-      
-      map.off(L.Draw.Event.CREATED);
-      map.off(L.Draw.Event.EDITED);
-      
-      if (polygon) {
-        polygon.remove();
-      }
-      
-      markers.forEach(marker => marker.remove());
+  
+    // Fonction pour réinitialiser et commencer un nouveau polygone
+    const resetPolygon = () => {
+      setEditablePolygon(null);
+      setIsEditing(false);
+      setIsCreating(false);
+      setCurrentPolygon([]);
+      setActiveVertexIndex(null);
     };
-  }, [locationNameType]);
+  
+    // Gérer le clic sur le bouton de réinitialisation
+    const handleResetClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      resetPolygon();
+    };
+  
+    return (
+      <>
+        {/* Afficher le polygone en cours de création */}
+        {isCreating && currentPolygon.length >= 2 && (
+          <Polyline positions={currentPolygon} color="blue" />
+        )}
+        
+        {/* Afficher le polygone éditable */}
+        {editablePolygon && editablePolygon.length >= 3 && (
+          <>
+            <Polygon positions={editablePolygon} />
+            
+            {/* Afficher les marqueurs pour les sommets */}
+            {isEditing && editablePolygon.map((position, index) => (
+              <Marker
+                key={`vertex-${index}`}
+                position={position}
+                draggable={true}
+                eventHandlers={{
+                  mousedown: () => setActiveVertexIndex(index),
+                  mouseup: () => setActiveVertexIndex(null),
+                  drag: (e) => handleMarkerDrag(index, [e.latlng.lat, e.latlng.lng]),
+                }}
+              />
+            ))}
+            
+            {/* Bouton pour réinitialiser le polygone */}
+            {isEditing && (
+              <div className="leaflet-control leaflet-bar" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000 }}>
+                <a href="#" onClick={handleResetClick} title="Créer un nouveau polygone">
+                  Nouveau polygone
+                </a>
+              </div>
+            )}
+          </>
+        )}
+      </>
+    );
+  };
 
-  return null;
-};
-
-export default MapSelectPolygone;
+export default MapSelectPolygone

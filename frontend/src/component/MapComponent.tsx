@@ -3,11 +3,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents,Polyline } from 'react-le
 import L from 'leaflet';
 import MapSelectPolygone from './MapSelectPolygone';
 
-interface MapComponentProps {
-    onSelect: (coordinates: Coordinates) => void;
-    locationType : boolean,
-    locationNameType: string
-}
+
 type UpdateDraggingProps = {
   dragging: boolean;
   mapRef: React.MutableRefObject<L.Map | null>;

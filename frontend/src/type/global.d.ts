@@ -2,6 +2,9 @@ type Coordinates = number[] | [number, number][][] | number[][];
 type MultiPolyline = Array<Array<[number, number]>>
 type Line = Array<[number,number]>
 
+type Polygon = Point[];
+type Point = [number, number];
+
 interface LocationFormData {
     city: string;
     neighborhood: string;
@@ -14,3 +17,9 @@ interface LocationFormData {
 type MapComponentHandle = {
     clearMap: () => void;
 };
+
+interface MapComponentProps {
+    onSelect: (coordinates: Coordinates) => void;
+    locationType : boolean,
+    locationNameType: string
+}
