@@ -1,14 +1,16 @@
 // src/page/LocationGeoForm.tsx
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { MapPin, AlertTriangle } from 'lucide-react';
 import { validateLocationForm } from '../utils/validationForm';
 import FormInput from '../component/FormInput';
 import FormSelect from '../component/FormSelect';
 import MapComponent from '../component/MapComponent';
 import { SERVER_URL } from '../config/serverURLConfig';
+import { toast } from 'react-toastify';
 
 
 const LocationGeoFormFromMap: React.FC = () => {
+  const mapRef = useRef<MapComponentHandle>(null);
   const [locationType,setLocationType]=useState(true);
   const [locationNameType , setLocationNameType] = useState("Point")
   const [formData, setFormData] = useState<LocationFormData>({
@@ -68,11 +70,20 @@ const LocationGeoFormFromMap: React.FC = () => {
         },
         body:JSON.stringify(request)
       }).then(res=>res.json()).then(data=>{
-        console.log(data);
+        setFormData({
+          city: '',
+          neighborhood: '',
+          locationType: 'Point',
+          coordinates: [0, 0],
+          riskLevel: 'medium',
+          description: ''
+        })
+        mapRef.current?.clearMap();
+        toast.success("Location added successfully!");
       }).catch(err=>{
         console.error(err)
+        toast.error("Failed to add location.");
       })
-      // Appel API ici
     } else {
       setErrors(formErrors);
     }
@@ -80,7 +91,6 @@ const LocationGeoFormFromMap: React.FC = () => {
 
   // Fonction pour récupérer les coordonnées depuis la carte
   const handleMapSelect = (coords: Coordinates) => {
-    console.log(coords); // all type of coordinate
     setFormData(prev => ({ ...prev, coordinates: coords }));
   };
 
@@ -145,7 +155,7 @@ const LocationGeoFormFromMap: React.FC = () => {
                 <h3 className="text-lg font-medium text-gray-700 mb-2">
                   Sélectionnez la localisation sur la carte
                 </h3>
-                <MapComponent onSelect={handleMapSelect} locationType={locationType} locationNameType = {locationNameType}/>
+                <MapComponent ref={mapRef} onSelect={handleMapSelect} locationType={locationType} locationNameType = {locationNameType}/>
                 {errors.coordinates && (
                   <div className="mt-2 text-sm text-red-600 flex items-center">
                     <AlertTriangle className="mr-2" size={16} /> {errors.coordinates}

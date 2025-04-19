@@ -54,6 +54,7 @@ const AppRoutes: React.FC = () => {
           </div>
         </div>
       </AuthProvider>
+      
     </Router>
   );
 };

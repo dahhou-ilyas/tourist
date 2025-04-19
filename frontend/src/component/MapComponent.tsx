@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents,Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import MapSelectPolygone from './MapSelectPolygone';
@@ -127,8 +127,19 @@ const MapSelectLign: React.FC<MapComponentProps> = ({onSelect,locationNameType})
 
 
 
-const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType,locationNameType }) => {
+const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({ onSelect, locationType, locationNameType }, ref) => {
   const mapRef = useRef<L.Map | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    clearMap: () => {
+      if (!mapRef.current) return;
+      mapRef.current.eachLayer((layer) => {
+        if (!(layer instanceof L.TileLayer)) {
+          mapRef.current!.removeLayer(layer);
+        }
+      });
+    }
+  }));
 
     return (
       <MapContainer 
@@ -149,7 +160,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType,locat
         <UpdateDragging dragging={locationType} mapRef={mapRef} />
       </MapContainer>
     );
-  };
+});
   
   export default MapComponent;
 

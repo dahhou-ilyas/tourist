@@ -10,3 +10,7 @@ interface LocationFormData {
     riskLevel: 'low' | 'medium' | 'high';
     description: string;
 }
+
+type MapComponentHandle = {
+    clearMap: () => void;
+};
