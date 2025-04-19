@@ -8,6 +8,8 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
     const [isEditing, setIsEditing] = useState(false);
     const [activeVertexIndex, setActiveVertexIndex] = useState<number | null>(null);
     const [draggingVertex, setDraggingVertex] = useState(false);
+
+    const [allPolygon,setAllPolygon] = useState<Polygon[]|null>(null);
   
     useEffect(() => {
       if (locationNameType !== "Polygon") {
@@ -32,7 +34,9 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
   
     const map = useMapEvents({
       mousedown(e) {
+        console.log("mousedown");
         if (locationNameType !== "Polygon") return;
+        
         
         const { lat, lng } = e.latlng;
         
@@ -45,7 +49,7 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
         // Si on commence à créer un nouveau polygone
         if (!isCreating && !editablePolygon) {
           setIsCreating(true);
-          setCurrentPolygon([[lat, lng]]);
+          setCurrentPolygon([[lat, lng],[lat, lng],]);
           return;
         }
         
@@ -85,15 +89,19 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
         
         // Mettre à jour le point courant lors de la création
         if (isCreating && currentPolygon.length > 0) {
+            
           const updatedPolygon = [...currentPolygon];
           if (updatedPolygon.length > 1) {
+            
             // Mettre à jour le dernier point pour suivre la souris
             updatedPolygon[updatedPolygon.length - 1] = [lat, lng];
+            console.log(updatedPolygon);
             setCurrentPolygon(updatedPolygon);
           }
         }
       },
       mouseup() {
+        console.log("mouseUp");
         if (locationNameType !== "Polygon") return;
         
         // Arrêter le déplacement d'un vertex
@@ -103,10 +111,15 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
       },
       dblclick() {
         if (locationNameType !== "Polygon" || !isCreating) return;
-        
-        // Terminer la création du polygone avec un double-clic
         if (currentPolygon.length >= 3) {
           setEditablePolygon([...currentPolygon]);
+          if(allPolygon){
+            const newP = [...allPolygon,currentPolygon];
+            setAllPolygon(newP)
+          }else{
+            setAllPolygon([currentPolygon]);
+          }
+          
           setIsCreating(false);
           setCurrentPolygon([]);
           setIsEditing(true);
@@ -114,7 +127,6 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
       },
     });
   
-    // Fonction pour réinitialiser et commencer un nouveau polygone
     const resetPolygon = () => {
       setEditablePolygon(null);
       setIsEditing(false);
@@ -123,7 +135,6 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
       setActiveVertexIndex(null);
     };
   
-    // Gérer le clic sur le bouton de réinitialisation
     const handleResetClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       resetPolygon();
