@@ -12,9 +12,17 @@ module.exports = {
             }
     
             const { type, coordinates } = location;
-    
-            // 🔍 Traitement selon le type géométrique
-            if (type === "LineString") {
+
+            if (type === "Point"){
+                if (
+                    !Array.isArray(coordinates) ||
+                    coordinates.length !== 2 ||
+                    typeof coordinates[0] !== "number" ||
+                    typeof coordinates[1] !== "number"
+                ) {
+                    return res.status(400).json({ message: "Coordonnées invalides pour un Point." });
+                }
+            } else if (type === "LineString") {
                 if (!Array.isArray(coordinates)) {
                     return res.status(400).json({ message: "Coordonnées invalides pour un LineString." });
                 }
@@ -99,5 +107,45 @@ module.exports = {
             console.error('Error fetching nearby locations:', error);
             res.status(500).json({ message: 'Internal server error' });
         }
-    } 
+    },
+    addMultiplePoints : async (req, res) =>{
+        try {
+            const { city, neighborhood, description = "", riskLevel = "medium", location } = req.body;
+            if (location.type !== "Point") {
+                return res.status(400).json({ message: "Ce endpoint ne gère que des Points." });
+            }
+            if (!Array.isArray(location.coordinates) || location.coordinates.length === 0) {
+                return res.status(400).json({ message: "Liste de coordonnées invalide ou vide." });
+            }
+          
+            const invalidPoint = location.coordinates.find(coord => 
+                !Array.isArray(coord) || coord.length !== 2 || 
+                typeof coord[0] !== 'number' || typeof coord[1] !== 'number'
+            );
+
+            if (invalidPoint) {
+                return res.status(400).json({ message: "Une ou plusieurs coordonnées sont invalides." });
+            }
+
+            const locationsToSave = location.coordinates.map(coord => ({
+                city,
+                neighborhood,
+                description,
+                riskLevel,
+                location: {
+                  type: "Point",
+                  coordinates: coord
+                }
+            }));
+
+            const savedLocations = await LocationGeo.insertMany(locationsToSave);
+
+            res.status(201).json({
+                message: `${savedLocations.length} points adeed succesefly`,
+            });
+        } catch (error) {
+            console.error("Erreur lors de l’ajout des points :", error);
+            res.status(500).json({ message: "Erreur serveur" });
+        }
+    }
 }

@@ -80,7 +80,11 @@ router.post("/locations"
     , locationService.addLocation
 )
 
-
+router.post("/locations/bulk"
+    , VALIDATION_RULES.addLocation
+    , VALIDATE
+    , locationService.addMultiplePoints
+)
 
 /**
  * @swagger

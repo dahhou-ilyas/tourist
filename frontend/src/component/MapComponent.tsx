@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents,Polyline } from 'react-leaflet';
 import L from 'leaflet';
+import MapSelectPolygone from './MapSelectPolygone';
 
 interface MapComponentProps {
     onSelect: (coordinates: Coordinates) => void;
-    locationType : boolean
+    locationType : boolean,
+    locationNameType: string
 }
 type UpdateDraggingProps = {
   dragging: boolean;
@@ -25,11 +27,16 @@ const UpdateDragging: React.FC<UpdateDraggingProps> = ({ dragging, mapRef }) => 
   return null;
 };
 
-const MapSelector: React.FC<MapComponentProps> = ({ onSelect ,locationType}) => {
+const MapSelectorPoint: React.FC<MapComponentProps> = ({ onSelect ,locationType,locationNameType}) => {
 
     const [position, setPosition] = useState<[number, number] | null>(null);
   
     const [points , setPoints] = useState<[number, number][]>([]);
+
+    useEffect(()=>{
+        setPoints([])
+      
+    },[locationNameType])
 
     useEffect(()=>{
       onSelect(points);
@@ -53,17 +60,16 @@ const MapSelector: React.FC<MapComponentProps> = ({ onSelect ,locationType}) => 
 
 
 //locationType is un boolean qui permet de vérifier si il est un point ou  (ligne et polygon)
-const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => {
+const MapSelectLign: React.FC<MapComponentProps> = ({onSelect,locationNameType}) => {
   const isDragging = useRef(false);
   const startPoint = useRef<[number, number] | null>(null);
   const [currentLine, setCurrentLine] = useState<Line>([]);
   const [allLines, setAllLines] = useState<MultiPolyline>([]);
 
   useEffect(() => {
-    if(locationType) {
+    
       setAllLines([]);
-    }
-  }, [locationType]);
+  }, [locationNameType]);
 
   useEffect(()=>{
     onSelect(allLines)
@@ -71,7 +77,7 @@ const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => 
   
   useMapEvents({
     mousedown(e) {
-      if(locationType){
+      if(locationNameType != "LineString"){
         return;
       }
       isDragging.current = true;
@@ -81,7 +87,7 @@ const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => 
       console.log('🟢 Drag start at:', e.latlng);
     },
     mousemove(e) {
-      if (locationType || !isDragging.current || !startPoint.current) {
+      if (locationNameType!="LineString" || !isDragging.current || !startPoint.current) {
         return;
       }
       if (isDragging.current) {
@@ -91,7 +97,7 @@ const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => 
       }
     },
     mouseup(e) {
-      if(locationType){
+      if(locationNameType != "LineString"){
         return;
       }
       if (isDragging.current && startPoint.current) {
@@ -119,11 +125,9 @@ const MapSelectLign: React.FC<MapComponentProps> = ({locationType,onSelect}) => 
 
 };
 
-const MapSelectPolygone : React.FC<MapComponentProps> = ({ onSelect,locationType }) =>{
-  return null;
-}
 
-const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType }) => {
+
+const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType,locationNameType }) => {
   const mapRef = useRef<L.Map | null>(null);
 
     return (
@@ -139,8 +143,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ onSelect,locationType }) =>
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapSelector onSelect={onSelect} locationType ={locationType} />
-        <MapSelectLign onSelect={onSelect} locationType={locationType}/>
+        <MapSelectorPoint onSelect={onSelect} locationType ={locationType} locationNameType={locationNameType}/>
+        <MapSelectLign onSelect={onSelect} locationType={locationType} locationNameType={locationNameType}/>
+        <MapSelectPolygone onSelect={onSelect} locationType={locationType} locationNameType={locationNameType} />
         <UpdateDragging dragging={locationType} mapRef={mapRef} />
       </MapContainer>
     );

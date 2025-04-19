@@ -10,6 +10,7 @@ import { SERVER_URL } from '../config/serverURLConfig';
 
 const LocationGeoFormFromMap: React.FC = () => {
   const [locationType,setLocationType]=useState(true);
+  const [locationNameType , setLocationNameType] = useState("Point")
   const [formData, setFormData] = useState<LocationFormData>({
     city: '',
     neighborhood: '',
@@ -25,8 +26,10 @@ const LocationGeoFormFromMap: React.FC = () => {
     const { name, value } = e.target;
     if((name == "locationType") && (value == "LineString" || value == "Polygon")){
       setLocationType(false);
+      setLocationNameType(value);
     }else if(name == "locationType" && value == "Point"){
-      setLocationType(true)
+      setLocationType(true);
+      setLocationNameType(value);
     }
     
     setFormData(prev => ({
@@ -38,7 +41,7 @@ const LocationGeoFormFromMap: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formErrors = validateLocationForm(formData);
-    console.log(formData);
+    
     const request = {
       city:formData.city,
       neighborhood:formData.neighborhood,
@@ -51,8 +54,13 @@ const LocationGeoFormFromMap: React.FC = () => {
 
     }
 
+    let url = SERVER_URL+"/maps/locations";
+
+    if (formData.locationType == "Point"){
+      url = SERVER_URL+"/maps/locations/bulk"
+    }
     if (Object.keys(formErrors).length === 0) {
-      fetch(SERVER_URL+"/maps/locations",{
+      fetch(url,{
         method:"POST",
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +145,7 @@ const LocationGeoFormFromMap: React.FC = () => {
                 <h3 className="text-lg font-medium text-gray-700 mb-2">
                   Sélectionnez la localisation sur la carte
                 </h3>
-                <MapComponent onSelect={handleMapSelect} locationType={locationType}/>
+                <MapComponent onSelect={handleMapSelect} locationType={locationType} locationNameType = {locationNameType}/>
                 {errors.coordinates && (
                   <div className="mt-2 text-sm text-red-600 flex items-center">
                     <AlertTriangle className="mr-2" size={16} /> {errors.coordinates}
