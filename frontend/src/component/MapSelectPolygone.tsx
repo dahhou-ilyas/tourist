@@ -10,6 +10,11 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
     const [draggingVertex, setDraggingVertex] = useState(false);
 
     const [allPolygon,setAllPolygon] = useState<Polygon[]|null>(null);
+
+    useEffect(()=>{
+        resetPolygon();
+          
+    },[locationNameType])
   
     useEffect(() => {
       if (locationNameType !== "Polygon") {
@@ -20,7 +25,7 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
   
     useEffect(() => {
       if (editablePolygon && editablePolygon.length >= 3) {
-        onSelect([editablePolygon]);
+        onSelect(editablePolygon);
       }
     }, [editablePolygon]);
   
@@ -34,7 +39,7 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
   
     const map = useMapEvents({
       mousedown(e) {
-        console.log("mousedown");
+        if(currentPolygon.length >= 4) return;
         if (locationNameType !== "Polygon") return;
         
         
@@ -101,7 +106,7 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
         }
       },
       mouseup() {
-        console.log("mouseUp");
+        if(currentPolygon.length >= 4) return;
         if (locationNameType !== "Polygon") return;
         
         // Arrêter le déplacement d'un vertex

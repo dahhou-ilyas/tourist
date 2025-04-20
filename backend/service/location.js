@@ -43,6 +43,7 @@ module.exports = {
                     ring.push(ring[0]); // referme le polygone
                     locationData.location.coordinates = [ring];
                 }
+                
             }
     
             else {
@@ -52,12 +53,14 @@ module.exports = {
             const newLocation = new LocationGeo(locationData);
             await newLocation.save();
     
+            
             const responseData = {
                 _id: newLocation._id,
                 city: newLocation.city,
                 neighborhood: newLocation.neighborhood,
                 riskLevel: newLocation.riskLevel
             };
+
             
             res.status(201).json({
                 message: 'Location ajoutée avec succès',

@@ -55,6 +55,7 @@ const LocationGeoFormFromMap: React.FC = () => {
       description:formData.description
 
     }
+    console.log(request);
 
     let url = SERVER_URL+"/maps/locations";
 
