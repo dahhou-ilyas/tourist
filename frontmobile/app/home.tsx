@@ -4,7 +4,6 @@ import { Image } from 'expo-image';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import ListTypeWriter from '@/component/Typewriter';
-import JumpingLogo from '@/component/JumpingLogo';
 import { useRouter } from 'expo-router';
 
 
