@@ -20,12 +20,12 @@ interface TypewriterProps {
 
 /* 🔥 Nouveau dégradé “Instagram corporate” */
 const GRADIENT_COLORS = [
-  '#F58529', // orange punchy
-  '#FF5E3A', // corail
-  '#DD2A7B', // magenta
-  '#8134AF', // violet
-  '#515BD4', // indigo
-];
+  '#F58529',
+  '#FF5E3A',
+  '#DD2A7B',
+  '#8134AF',
+  '#515BD4',
+] as const;
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
