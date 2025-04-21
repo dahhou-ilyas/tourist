@@ -5,9 +5,12 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import ListTypeWriter from '@/component/Typewriter';
 import JumpingLogo from '@/component/JumpingLogo';
+import { useRouter } from 'expo-router';
 
 
 export default function Index() {
+
+  const router= useRouter();
 
   return (
     <View className="flex-1 items-center justify-center bg-white">
@@ -36,7 +39,7 @@ export default function Index() {
         <ListTypeWriter/>
       </View>
       <View className='flex-2 mb-40'>
-        <Pressable className="px-12 py-4 rounded-lg bg-blue-500">
+        <Pressable onPress={e => router.push("/maps")} className="px-12 py-4 rounded-lg bg-blue-500">
           <Text className="text-white font-bold">Appuyer</Text>
         </Pressable>
       </View>
