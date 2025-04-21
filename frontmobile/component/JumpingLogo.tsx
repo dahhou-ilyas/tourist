@@ -17,7 +17,7 @@ const JumpingLogo = () => {
   useEffect(() => {
     scale.value = withRepeat(
       withSequence(
-        withTiming(1.2, {
+        withTiming(1, {
           duration: 600,
           easing: Easing.out(Easing.quad),
         }),

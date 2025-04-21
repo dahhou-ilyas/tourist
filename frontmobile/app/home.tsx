@@ -35,7 +35,11 @@ export default function Index() {
         </MaskedView>
       </View>
       <View className='flex-1 items-center justify-center gap-y-6'>
-        <JumpingLogo/>
+        <Image
+          source={require('../assets/images/logoMaps.png')}
+          style={{ width: 300, height: 300, borderRadius: 12 }}
+          contentFit="contain"
+        />
         <ListTypeWriter/>
       </View>
       <View className='flex-2 mb-40'>
