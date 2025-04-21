@@ -30,4 +30,22 @@ const Typewriter : React.FC<TypewriterProps>= ({ text, delay, infinite }) =>{
     return <Text className="font-bold">{currentText}</Text>;
 }
 
-export default Typewriter;
+
+const ListTypeWriter : React.FC<{}> = ()=>{
+    const [data,setData] = useState<string[]>(["raefdaedf","xxxxxxxxxx","ddddddd"])
+    const [index,setIndex] = useState<number>(0);
+
+    useEffect(()=>{
+        const t=setTimeout(()=>{
+            setIndex(prev => (prev + 1) % data.length)
+        },1500)
+        return () => clearTimeout(t);
+    },[index])
+    return (
+        <>
+           <Typewriter key={index} text={data[index]} delay={100} infinite />
+        </>
+    );
+}
+
+export default ListTypeWriter

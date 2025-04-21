@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
-import Typewriter from '@/component/Typewriter';
+import ListTypeWriter from '@/component/Typewriter';
 
 
 export default function Index() {
@@ -36,7 +36,7 @@ export default function Index() {
           style={{ width: 300, height: 300, borderRadius: 12 }}
           contentFit="contain"
         />
-        <Typewriter text="My React App" delay={150} infinite />
+        <ListTypeWriter />
       </View>
       <View className='flex-2 mb-40'>
         <Pressable className="px-12 py-4 rounded-lg bg-blue-500">
