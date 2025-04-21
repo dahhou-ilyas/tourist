@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import ListTypeWriter from '@/component/Typewriter';
+import JumpingLogo from '@/component/JumpingLogo';
 
 
 export default function Index() {
@@ -31,12 +32,8 @@ export default function Index() {
         </MaskedView>
       </View>
       <View className='flex-1 items-center justify-center gap-y-6'>
-        <Image
-          source={require('../assets/images/logoMaps.png')}
-          style={{ width: 300, height: 300, borderRadius: 12 }}
-          contentFit="contain"
-        />
-        <ListTypeWriter />
+        <JumpingLogo/>
+        <ListTypeWriter/>
       </View>
       <View className='flex-2 mb-40'>
         <Pressable className="px-12 py-4 rounded-lg bg-blue-500">
