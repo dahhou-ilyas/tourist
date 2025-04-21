@@ -26,7 +26,6 @@ module.exports = {
                 if (!Array.isArray(coordinates)) {
                     return res.status(400).json({ message: "Coordonnées invalides pour un LineString." });
                 }
-                // Correction si coordonnées mal imbriquées
                 if (Array.isArray(coordinates[0][0])) {
                     locationData.location.coordinates = coordinates.flat();
                 }
@@ -37,10 +36,9 @@ module.exports = {
                     return res.status(400).json({ message: "Coordonnées invalides pour un Polygon." });
                 }
     
-                // Correction : si l'anneau extérieur n'est pas fermé, on le referme automatiquement
                 const ring = coordinates[0];
                 if (ring.length < 4 || JSON.stringify(ring[0]) !== JSON.stringify(ring[ring.length - 1])) {
-                    ring.push(ring[0]); // referme le polygone
+                    ring.push(ring[0]);
                     locationData.location.coordinates = [ring];
                 }
                 
@@ -67,7 +65,7 @@ module.exports = {
                 location: responseData
             });
         } catch (error) {
-            console.error('Erreur lors de l’ajout de la localisation :', error);
+            console.error('Erreur lors de ajout de la localisation :', error);
             res.status(500).json({ message: 'Erreur serveur' });
         }
     },
