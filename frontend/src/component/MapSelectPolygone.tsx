@@ -37,7 +37,7 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
       }
     };
   
-    const map = useMapEvents({
+    useMapEvents({
       mousedown(e) {
         if(currentPolygon.length >= 4) return;
         if (locationNameType !== "Polygon") return;

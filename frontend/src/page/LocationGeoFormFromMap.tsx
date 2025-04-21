@@ -71,6 +71,7 @@ const LocationGeoFormFromMap: React.FC = () => {
         },
         body:JSON.stringify(request)
       }).then(res=>res.json()).then(data=>{
+        console.log(data);
         setFormData({
           city: '',
           neighborhood: '',
