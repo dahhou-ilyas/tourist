@@ -75,12 +75,92 @@ const locationService = require("../service/location")
  */
 
 router.post("/locations"
+    , verifyToken
     , VALIDATION_RULES.addLocation
     , VALIDATE
     , locationService.addLocation
 )
 
+/**
+ * @swagger
+ * /locations/bulk:
+ *   post:
+ *     summary: Ajouter plusieurs points géographiques
+ *     description: |
+ *       Ajoute **plusieurs** emplacements de type **Point** en une seule requête.  
+ *       Chaque paire `[longitude, latitude]` contenue dans `location.coordinates`
+ *       sera enregistrée comme un point distinct dans la base.
+ *     tags: [Locations]
+ *     security:
+ *       - bearerAuth: []          # Nécessite un JWT Bearer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - city
+ *               - neighborhood
+ *               - location
+ *             properties:
+ *               city:
+ *                 type: string
+ *                 example: Casablanca
+ *               neighborhood:
+ *                 type: string
+ *                 example: Hay Mohammadi
+ *               location:
+ *                 type: object
+ *                 required:
+ *                   - type
+ *                   - coordinates
+ *                 properties:
+ *                   type:
+ *                     type: string
+ *                     enum: [Point]          # Uniquement Point pour ce endpoint
+ *                     example: Point
+ *                   coordinates:
+ *                     type: array
+ *                     description: Liste de couples **[longitude, latitude]**
+ *                     items:
+ *                       type: array
+ *                       minItems: 2
+ *                       maxItems: 2
+ *                       items:
+ *                         type: number
+ *                     example:
+ *                       - [-7.5890, 33.5902]
+ *                       - [-7.5905, 33.5920]
+ *               riskLevel:
+ *                 type: string
+ *                 enum: [low, medium, high]
+ *                 default: medium
+ *                 example: medium
+ *               description:
+ *                 type: string
+ *                 default: ""
+ *                 example: Zone résidentielle à fort trafic
+ *     responses:
+ *       201:
+ *         description: Points ajoutés avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 2 points adeed succesefly
+ *       400:
+ *         description: Requête invalide — type différent de *Point* ou coordonnées mal formées
+ *       401:
+ *         description: Non autorisé — jeton manquant ou invalide
+ *       500:
+ *         description: Erreur interne du serveur
+ */
 router.post("/locations/bulk"
+    , verifyToken
     , VALIDATION_RULES.addLocation
     , VALIDATE
     , locationService.addMultiplePoints
