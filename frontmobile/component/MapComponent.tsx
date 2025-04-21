@@ -7,13 +7,13 @@ import * as Location from 'expo-location';
 
 export default function MapComponent(){
 
-    const [locationData, setLocationData] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
-    const [heading, setHeading] = useState(null);
+    const [locationData, setLocationData] = useState<Location.LocationObject|null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [heading, setHeading] = useState<number|null>(null);
     
 
     useEffect(() => {
-      let positionSubscription;
+      let positionSubscription:Location.LocationSubscription;
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {

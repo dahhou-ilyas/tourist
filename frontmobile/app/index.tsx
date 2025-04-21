@@ -1,14 +1,22 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 
 export default function Index() {
 
   return (
     <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-600">
-        Hello NativeWind 🚀ddddddjjj
-      </Text>
+      <View className='flex-2 bg-indigo-700'>
+        <Text>My Mapeazeazezae</Text>
+      </View>
+      <View className='flex-1 bg-teal-400'>
+        <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero aliquid aperiam alias.</Text>
+      </View>
+      <View className='flex-2 bg-green-400'>
+        <Pressable>
+          <Text className="">Appuyer</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
