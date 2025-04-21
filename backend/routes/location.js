@@ -1,10 +1,10 @@
-const express= require('express');
+const express = require('express');
 
 const router = express.Router();
 
 const verifyToken = require("../middleware/verifyToken")
 
-const {VALIDATE,VALIDATION_RULES}= require("../utils/validationRules")
+const {VALIDATE,VALIDATION_RULES} = require("../utils/validationRules")
 
 const locationService = require("../service/location")
 
