@@ -5,6 +5,12 @@ type Line = Array<[number,number]>
 type Polygon = Point[];
 type Point = [number, number];
 
+interface MapSelectPolygoneRef {
+  resetPolygon: () => void;
+  getCurrentPolygon: () => Polygon | null;
+  setPolygon: (polygon: Polygon) => void;
+}
+
 interface LocationFormData {
     city: string;
     neighborhood: string;

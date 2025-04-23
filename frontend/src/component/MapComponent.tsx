@@ -126,12 +126,15 @@ const MapSelectLign: React.FC<MapComponentProps> = ({onSelect,locationNameType})
 const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({ onSelect, locationType, locationNameType }, ref) => {
   const mapRef = useRef<L.Map | null>(null);
 
+  const mapPolygonRef = useRef<MapSelectPolygoneRef>(null);
+
   useImperativeHandle(ref, () => ({
     clearMap: () => {
       if (!mapRef.current) return;
       mapRef.current.eachLayer((layer) => {
         if (!(layer instanceof L.TileLayer)) {
           mapRef.current!.removeLayer(layer);
+          mapPolygonRef.current?.resetPolygon();
         }
       });
     }
@@ -152,7 +155,7 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({ onSele
         />
         <MapSelectorPoint onSelect={onSelect} locationType ={locationType} locationNameType={locationNameType}/>
         <MapSelectLign onSelect={onSelect} locationType={locationType} locationNameType={locationNameType}/>
-        <MapSelectPolygone onSelect={onSelect} locationType={locationType} locationNameType={locationNameType} />
+        <MapSelectPolygone ref={mapPolygonRef} onSelect={onSelect} locationType={locationType} locationNameType={locationNameType} />
         <UpdateDragging dragging={locationType} mapRef={mapRef} />
       </MapContainer>
     );

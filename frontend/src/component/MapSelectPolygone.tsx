@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Marker, Polygon, Polyline, useMapEvents } from "react-leaflet";
 
-const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationNameType }) => {
+
+
+const MapSelectPolygone = forwardRef<MapSelectPolygoneRef, MapComponentProps>(
+  ({ onSelect, locationNameType }, ref) => {
+
     const [isCreating, setIsCreating] = useState(false);
     const [currentPolygon, setCurrentPolygon] = useState<Polygon>([]);
     const [editablePolygon, setEditablePolygon] = useState<Polygon | null>(null);
@@ -10,6 +14,25 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
     const [draggingVertex, setDraggingVertex] = useState(false);
 
     const [allPolygon,setAllPolygon] = useState<Polygon[]|null>(null);
+
+
+    useImperativeHandle(ref, () =>(
+      {
+        resetPolygon: () => {
+          resetPolygon();
+        },
+        getCurrentPolygon: () => {
+          return editablePolygon;
+        },
+        setPolygon: (polygon: Polygon) => {
+          setEditablePolygon(polygon);
+          setIsEditing(true);
+          setIsCreating(false);
+          setCurrentPolygon([]);
+          onSelect(polygon);
+        }
+      }
+    ))
 
     useEffect(()=>{
         resetPolygon();
@@ -183,6 +206,6 @@ const MapSelectPolygone: React.FC<MapComponentProps> = ({ onSelect, locationName
         )}
       </>
     );
-  };
-
+  }
+)
 export default MapSelectPolygone
