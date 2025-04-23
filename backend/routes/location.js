@@ -75,7 +75,6 @@ const locationService = require("../service/location")
  */
 
 router.post("/locations"
-    , verifyToken
     , VALIDATION_RULES.addLocation
     , VALIDATE
     , locationService.addLocation
@@ -160,7 +159,6 @@ router.post("/locations"
  *         description: Erreur interne du serveur
  */
 router.post("/locations/bulk"
-    , verifyToken
     , VALIDATION_RULES.addLocation
     , VALIDATE
     , locationService.addMultiplePoints

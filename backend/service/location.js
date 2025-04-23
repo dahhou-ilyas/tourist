@@ -6,7 +6,7 @@ module.exports = {
         try {
             const locationData = req.body;
             const location = locationData.location;
-    
+            
             if (!location || !location.type || !location.coordinates) {
                 return res.status(400).json({ message: "Champs 'location' incomplet ou invalide." });
             }
@@ -33,24 +33,36 @@ module.exports = {
     
             else if (type === "Polygon") {
                 if (!Array.isArray(coordinates) || !Array.isArray(coordinates[0])) {
-                    return res.status(400).json({ message: "Coordonnées invalides pour un Polygon." });
-                }
-    
-                const ring = coordinates[0];
-                if (ring.length < 4 || JSON.stringify(ring[0]) !== JSON.stringify(ring[ring.length - 1])) {
-                    ring.push(ring[0]);
-                    locationData.location.coordinates = [ring];
+                  return res.status(400).json({ message: "Coordonnées invalides pour un Polygon." });
                 }
                 
-            }
+                // S'assurer que chaque point est un tableau à 2 dimensions [longitude, latitude]
+                const ring = coordinates.map(point => {
+                  if (Array.isArray(point) && point.length === 2) {
+                    return point;
+                  } else if (Array.isArray(point) && point.length > 2) {
+                    return [point[0], point[1]]; // Prendre seulement les 2 premières valeurs
+                  }
+                  return null;
+                }).filter(point => point !== null);
+                
+                // Vérifier si le premier et le dernier point sont identiques
+                if (ring.length < 4 || JSON.stringify(ring[0]) !== JSON.stringify(ring[ring.length - 1])) {
+                  ring.push([...ring[0]]); // Ajouter une copie du premier point à la fin
+                }
+                
+                locationData.location.coordinates = [ring];
+              }
     
             else {
                 return res.status(400).json({ message: "Type géométrique non supporté." });
             }
     
             const newLocation = new LocationGeo(locationData);
-            await newLocation.save();
-    
+            const data=await newLocation.save();
+            console.log("xxxxxxxxxxxxxxx");
+            console.log(data.location.coordinates);
+            console.log("xxxxxxxxxxxxxxx");
             
             const responseData = {
                 _id: newLocation._id,
@@ -58,6 +70,7 @@ module.exports = {
                 neighborhood: newLocation.neighborhood,
                 riskLevel: newLocation.riskLevel
             };
+
 
             
             res.status(201).json({
