@@ -71,7 +71,7 @@ const LocationGeoFormFromMap: React.FC = () => {
         },
         body:JSON.stringify(request)
       }).then(res=>res.json()).then(data=>{
-        console.log(data);
+        
         setFormData({
           city: '',
           neighborhood: '',
@@ -81,6 +81,10 @@ const LocationGeoFormFromMap: React.FC = () => {
           description: ''
         })
         mapRef.current?.clearMap();
+        if(data.errors){
+          toast.error("you have to specifie a location");
+          return
+        }
         toast.success("Location added successfully!");
       }).catch(err=>{
         console.error(err)

@@ -127,14 +127,43 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({ onSele
   const mapRef = useRef<L.Map | null>(null);
 
   const mapPolygonRef = useRef<MapSelectPolygoneRef>(null);
+  const [userPosition, setUserPosition] = useState<[number, number] | undefined>(undefined);
+
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log(position.coords);
+          const { latitude, longitude } = position.coords;
+          setUserPosition([latitude, longitude]);
+          
+          if (mapRef.current) {
+            mapRef.current.setView([latitude, longitude], 15);
+          }
+        },
+        (error) => {
+          console.error("Erreur lors de l'obtention de la position:", error);
+        }
+      );
+    } else {
+      console.error("La géolocalisation n'est pas supportée par ce navigateur");
+    }
+  };
+
+  useEffect(()=>{
+    getUserLocation();
+  },[])
 
   useImperativeHandle(ref, () => ({
     clearMap: () => {
       if (!mapRef.current) return;
       mapRef.current.eachLayer((layer) => {
+        
         if (!(layer instanceof L.TileLayer)) {
-          mapRef.current!.removeLayer(layer);
-          mapPolygonRef.current?.resetPolygon();
+          if(layer.options.title!="myPosition"){
+            mapRef.current!.removeLayer(layer);
+            mapPolygonRef.current?.resetPolygon();
+          } 
         }
       });
     }
@@ -153,6 +182,7 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({ onSele
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {userPosition && <Marker title='myPosition' position={userPosition as [number, number]}/>}
         <MapSelectorPoint onSelect={onSelect} locationType ={locationType} locationNameType={locationNameType}/>
         <MapSelectLign onSelect={onSelect} locationType={locationType} locationNameType={locationNameType}/>
         <MapSelectPolygone ref={mapPolygonRef} onSelect={onSelect} locationType={locationType} locationNameType={locationNameType} />
