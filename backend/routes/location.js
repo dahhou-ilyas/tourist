@@ -193,7 +193,6 @@ router.post("/locations/bulk"
  */
 
 router.get("/locations/nearby"
-    , verifyToken
     , VALIDATION_RULES.getNearbyLocations
     , VALIDATE
     , locationService.getNearbyLocations);

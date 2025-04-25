@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose');
 const LocationGeo = require('../model/LocationGeo');
 
 
@@ -131,6 +132,9 @@ module.exports = {
             maxDistance = 1000, // Distance en mètres, par défaut 1km
             riskLevel = null    // Optionnel pour filtrer par niveau de risque
           } = req.query;
+
+          console.log(lat);
+          console.log(lng);
       
           // Valider les coordonnées
           const latitude = parseFloat(lat);
@@ -216,7 +220,7 @@ module.exports = {
       
           // Récupérer toutes les locations par leurs IDs
           const allLocations = await LocationGeo.find({
-            _id: { $in: Array.from(allLocationsSet).map(id => mongoose.Types.ObjectId(id)) }
+            _id: { $in: Array.from(allLocationsSet).map(id => new mongoose.Types.ObjectId(id)) }
           });
       
           // Pour chaque location, calculer sa distance par rapport à l'utilisateur si c'est un Point
@@ -261,6 +265,7 @@ module.exports = {
             return 0;
           });
       
+          console.log(sortedLocations);
           res.status(200).json({
             message: 'Emplacements proches trouvés avec succès',
             count: sortedLocations.length,

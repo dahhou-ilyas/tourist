@@ -133,7 +133,6 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({ onSele
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(position.coords);
           const { latitude, longitude } = position.coords;
           setUserPosition([latitude, longitude]);
           
