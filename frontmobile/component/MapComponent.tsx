@@ -133,21 +133,27 @@ export default function MapComponent() {
   const renderLines = () => {
     return nearbyLocations
       .filter(item => item.location.type === 'LineString')
-      .map(line => {
-        
+      .flatMap(line => {
         const coordinates = line.location.coordinates.map(([longitude, latitude]) => ({
           latitude,
           longitude
         }));
+  
+        const segments = [];
         
-        return (
-          <Polyline
-            key={line._id}
-            coordinates={coordinates}
-            strokeColor={getRiskColor(line.riskLevel)}
-            strokeWidth={3}
-          />
-        );
+        // Parcours par saut de 2 (pairs de points)
+        for (let i = 0; i < coordinates.length - 1; i += 2) {
+          segments.push(
+            <Polyline
+              key={`${line._id}_${i}`}
+              coordinates={[coordinates[i], coordinates[i + 1]]}
+              strokeColor={getRiskColor(line.riskLevel)}
+              strokeWidth={3}
+            />
+          );
+        }
+  
+        return segments;
       });
   };
 
