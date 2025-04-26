@@ -35,7 +35,8 @@ const MapSelectorPoint: React.FC<MapComponentProps> = ({ onSelect ,locationType,
     },[locationNameType])
 
     useEffect(()=>{
-      onSelect(points);
+      const fixedPoints = points.map(([lat, lng]) => [lng, lat]);
+      onSelect(fixedPoints);
     },[points])
 
     useMapEvents({
@@ -67,9 +68,12 @@ const MapSelectLign: React.FC<MapComponentProps> = ({onSelect,locationNameType})
       setAllLines([]);
   }, [locationNameType]);
 
-  useEffect(()=>{
-    onSelect(allLines)
-  },[allLines])
+  useEffect(() => {
+    const fixedLines = allLines.flatMap(line =>
+      line.map(([lat, lng]) => [lng, lat] as [number, number])
+    );
+    onSelect(fixedLines);
+  }, [allLines]);
   
   useMapEvents({
     mousedown(e) {
@@ -133,6 +137,7 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({ onSele
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log(position.coords);
           const { latitude, longitude } = position.coords;
           setUserPosition([latitude, longitude]);
           
