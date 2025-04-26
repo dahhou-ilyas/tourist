@@ -145,9 +145,8 @@ module.exports = {
           // Créer un point GeoJSON représentant la position de l'utilisateur
           const userPoint = {
             type: 'Point',
-            coordinates: [latitude, longitude]
+            coordinates: [longitude,latitude]
           };
-          console.log(userPoint);
       
           // Préparer les critères de recherche
           const searchCriteria = {};
@@ -264,6 +263,7 @@ module.exports = {
             return 0;
           });
       
+          console.log(sortedLocations);
           res.status(200).json({
             message: 'Emplacements proches trouvés avec succès',
             count: sortedLocations.length,

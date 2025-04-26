@@ -30,6 +30,7 @@ export default function MapComponent() {
   // Fonction pour récupérer les emplacements à proximité
   const fetchNearbyLocations = async (latitude: number, longitude: number) => {
     try {
+      
       setLoading(true);
       const response = await axios.get(`${API_URL}/maps/locations/nearby`, {
         params: {
@@ -41,7 +42,6 @@ export default function MapComponent() {
           Authorization: `Bearer ${authToken}`
         }
       });
-      
       setNearbyLocations(response.data.locations);
     } catch (error) {
       console.error('Erreur lors de la récupération des emplacements:', error);
@@ -134,6 +134,7 @@ export default function MapComponent() {
     return nearbyLocations
       .filter(item => item.location.type === 'LineString')
       .map(line => {
+        
         const coordinates = line.location.coordinates.map(([longitude, latitude]) => ({
           latitude,
           longitude
