@@ -133,8 +133,6 @@ module.exports = {
             riskLevel = null    // Optionnel pour filtrer par niveau de risque
           } = req.query;
 
-          console.log(lat);
-          console.log(lng);
       
           // Valider les coordonnées
           const latitude = parseFloat(lat);
@@ -147,8 +145,9 @@ module.exports = {
           // Créer un point GeoJSON représentant la position de l'utilisateur
           const userPoint = {
             type: 'Point',
-            coordinates: [longitude, latitude]
+            coordinates: [latitude, longitude]
           };
+          console.log(userPoint);
       
           // Préparer les critères de recherche
           const searchCriteria = {};
@@ -265,7 +264,6 @@ module.exports = {
             return 0;
           });
       
-          console.log(sortedLocations);
           res.status(200).json({
             message: 'Emplacements proches trouvés avec succès',
             count: sortedLocations.length,
